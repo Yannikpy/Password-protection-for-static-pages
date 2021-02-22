@@ -11,9 +11,9 @@
 	
 	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
-
+   	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+   	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+	<script type="text/javascript" src="coordinates/coordinates.js"></script>
 
 	<style>
 		html, body {
@@ -62,10 +62,6 @@
 	var markerOptions = {icon: locationMarker}
 	
 	locationMarker = L.marker([0,0], markerOptions).addTo(map)
-	coordinates = [[50.9251597, 6.9313518], [50.9619081, 7.0039223], [50.923, 6.924]]
-	routes = [ [[50.9251597, 6.9313518], [50.9251597, 6.9313518]], 
-				[[50.9619081, 7.0039223], [50.9724992, 7.0023257]],
-				false]
 	
 	// init markers for audio
 	var pointMarkerActive = L.icon({
