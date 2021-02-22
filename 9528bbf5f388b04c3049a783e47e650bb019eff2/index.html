@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Alinas Titel der Webseite</title>
+	<meta property="og:title" content="Alinas Webseite" />
+	<meta property="og:description" content="mit einer kleinen Beschreibung von Alina">
+
+	
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+
+
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		#map {
+			width: 600px;
+			height: 400px;
+		}
+		.my_polyline {
+			stroke: #ff9c9c;
+			stroke-width: 3;
+			stroke-dasharray: 8, 10;
+		}
+	</style>
+
+	<style>body { padding: 0; margin: 0; } #map { height: 100%; width: 100vw; }</style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+	
+	
+	// init map
+	var map = L.map('map').setView([50.930804, 6.940782], 13)
+	
+	// add Stamen tileLayer
+	osm = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.{ext}', {
+	attribution: 'Map tiles by <a target="_blank" rel="noopener noreferrer" href="http://stamen.com">Stamen Design</a>, <a target="_blank" rel="noopener noreferrer" href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a target="_blank" rel="noopener noreferrer" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	subdomains: 'abcd',
+	minZoom: 6,
+	maxZoom: 20,
+	ext: 'png',
+	}).addTo(map)
+	
+	// init location marker
+	var locationMarker = L.icon({
+		iconUrl: 'symbols/standort.svg',
+		iconSize:     [40, 40], // size of the icon
+		iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location
+	});
+	
+	var markerOptions = {icon: locationMarker}
+	
+	locationMarker = L.marker([0,0], markerOptions).addTo(map)
+	coordinates = [[50.9251597, 6.9313518], [50.9619081, 7.0039223], [50.923, 6.924]]
+	routes = [ [[50.9251597, 6.9313518], [50.9251597, 6.9313518]], 
+				[[50.9619081, 7.0039223], [50.9724992, 7.0023257]],
+				false]
+	
+	// init markers for audio
+	var pointMarkerActive = L.icon({
+		iconUrl: 'symbols/aktiv.svg',
+		iconSize:     [40, 50], // size of the icon
+		iconAnchor:   [20, 25], // point of the icon which will correspond to marker's location
+	});
+	var pointMarker = L.icon({
+		iconUrl: 'symbols/inaktiv.svg',
+		iconSize:     [40, 50], // size of the icon
+		iconAnchor:   [20, 25], // point of the icon which will correspond to marker's location
+	});
+	var markerOptions = {icon: pointMarker}
+	
+
+	
+	
+	//init points
+	var markers = [];
+
+	let n = 1;
+	for (coordinate of coordinates){
+		var marker = L.marker(coordinate, markerOptions).addTo(map).on('click', story)
+		marker.id = n
+		marker.status = 'stop'
+		marker.active = false
+		markers.push(marker)
+		var activeMarker = marker
+		if (routes[n-1]){
+			L.polyline(routes[n-1], {className: 'my_polyline'}).addTo(map);
+			n++;
+		}
+	}
+
+
+	audio = new Audio('audio/1.mp3');
+	function story(e){
+		if (e.target.active == false) {return}
+		if (activeMarker == e.target){
+			if (e.target.status === 'stop'){
+				audio.pause()
+				audio = new Audio('audio/' + e.target.id + '.mp3');
+				audio.play();
+				e.target.status = 'play'
+			}
+			else if (e.target.status === 'play'){
+				audio.pause()
+				e.target.status = 'pause'
+			}
+			else if (e.target.status === 'pause'){
+				audio.play()
+				e.target.status = 'play'
+			}
+		}
+		else{
+			audio.pause()
+			audio = new Audio('audio/' + e.target.id + '.mp3');
+			audio.play();
+			e.target.status = 'play'
+			activeMarker = e.target
+		}
+		
+		
+	}
+	
+	
+	function onLocationFound(e) {
+		var radius = e.accuracy / 2;
+		if (radius <= 50) {
+			for (marker of markers){
+				if (marker.getLatLng().distanceTo(e.latlng) <= 100){
+					marker.setIcon(pointMarkerActive)
+					marker.active = true
+				}
+				else{
+					marker.setIcon(pointMarker)
+					marker.active = false
+					}
+			}
+			locationMarker.setLatLng(e.latlng)
+		}
+		
+		
+		
+	}
+
+	function onLocationError(e) {
+		alert('Bitte neu laden und Standort freigeben.');
+	}
+
+	map.on('locationfound', onLocationFound);
+	map.on('locationerror', onLocationError);
+
+	map.locate({setView: true, maxZoom: 16});
+</script>
+
+
+
+</body>
+</html>
